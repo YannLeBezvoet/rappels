@@ -77,14 +77,13 @@ export function versInstant(h: JourHeure, fuseau: string): Date {
 }
 
 /** Date lisible en français, par exemple « mar. 25 nov., 09:30 ». */
-export function formaterDate(instant: Date, fuseau: string, avecAnnee = false): string {
+export function formaterDate(instant: Date, fuseau: string, avecAnnee = false, avecHeure = true): string {
   return new Intl.DateTimeFormat('fr-FR', {
     timeZone: fuseau,
     weekday: 'short',
     day: '2-digit',
     month: 'short',
     ...(avecAnnee ? { year: 'numeric' as const } : {}),
-    hour: '2-digit',
-    minute: '2-digit',
+    ...(avecHeure ? { hour: '2-digit' as const, minute: '2-digit' as const } : {}),
   }).format(instant);
 }

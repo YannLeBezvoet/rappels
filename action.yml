@@ -1,0 +1,76 @@
+name: Rappels Markdown
+description: Envoie sur ton téléphone, en notification Web Push, les rappels écrits dans tes notes Markdown.
+author: YannLeBezvoet
+branding:
+  icon: bell
+  color: purple
+
+inputs:
+  vapid-private-key:
+    description: Clé privée VAPID (secret), créée par `npm run cles`.
+    required: true
+  subscriptions:
+    description: Abonnement(s) copié(s) depuis l'appli (secret), au format JSON.
+    required: true
+  notes:
+    description: Dossier des notes, relatif au dépôt.
+    default: '.'
+  timezone:
+    description: Fuseau horaire des dates écrites dans les notes.
+    default: Europe/Paris
+  default-time:
+    description: Heure des rappels écrits sans heure (HH:MM).
+    default: '08:00'
+  advance-minutes:
+    description: Un rappel peut partir jusqu'à ce nombre de minutes avant son heure.
+    default: '10'
+  catch-up-hours:
+    description: Un rappel pas encore parti peut partir jusqu'à ce nombre d'heures après son heure.
+    default: '24'
+  contact:
+    description: Contact donné aux services de push (https://… ou mailto:…). Par défaut, l'adresse de cette Action.
+    default: ''
+  dry-run:
+    description: "true : affiche ce qui partirait, sans rien envoyer."
+    default: 'false'
+
+outputs:
+  sent:
+    description: Nombre de rappels envoyés.
+    value: ${{ steps.envoi.outputs.envoyes }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+
+    # Mémoire des rappels déjà envoyés, gardée d'un passage à l'autre dans le cache de l'Action.
+    - uses: actions/cache/restore@v6
+      with:
+        path: ${{ runner.temp }}/rappels-etat
+        key: rappels-etat-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: rappels-etat-
+
+    - id: envoi
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/moteur/action.ts"
+      env:
+        RAPPELS_CLE_PRIVEE: ${{ inputs.vapid-private-key }}
+        RAPPELS_ABONNEMENTS: ${{ inputs.subscriptions }}
+        RAPPELS_NOTES: ${{ inputs.notes }}
+        RAPPELS_FUSEAU: ${{ inputs.timezone }}
+        RAPPELS_HEURE_DEFAUT: ${{ inputs.default-time }}
+        RAPPELS_AVANCE_MINUTES: ${{ inputs.advance-minutes }}
+        RAPPELS_RATTRAPAGE_HEURES: ${{ inputs.catch-up-hours }}
+        RAPPELS_CONTACT: ${{ inputs.contact }}
+        RAPPELS_DEPOT_ACTION: ${{ github.action_repository }}
+        RAPPELS_SIMULATION: ${{ inputs.dry-run }}
+        RAPPELS_ETAT: ${{ runner.temp }}/rappels-etat/etat.json
+
+    - if: always() && steps.envoi.outputs.etat-modifie == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ runner.temp }}/rappels-etat
+        key: rappels-etat-${{ github.run_id }}-${{ github.run_attempt }}

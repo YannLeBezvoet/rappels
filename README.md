@@ -7,7 +7,7 @@ Tes notes restent dans ton propre dépôt privé. Ce dépôt fournit :
 - `moteur/` : lit les notes, repère les rappels arrivés à échéance et les envoie en Web Push, sans dépendance ;
 - `app/` : une petite appli web installable (PWA) qui reçoit les notifications, publiée sur GitHub Pages ;
 - `outils/` : création des clés et notification de test, depuis le PC ;
-- `action.yml` (bientôt) : l'Action à appeler depuis ton dépôt de notes.
+- `action.yml` : l'Action à appeler depuis ton dépôt de notes.
 
 ## Écrire un rappel
 
@@ -71,33 +71,62 @@ npm run typecheck   # vérification des types
 
    La notification « Ça marche ! » arrive sur le téléphone. Pour plusieurs appareils, mets les textes dans une liste : `[ {...}, {...} ]`.
 
-## Utilisation (bientôt)
+## Brancher l'Action sur le dépôt de notes
 
-Dans ton dépôt de notes, `.github/workflows/rappels.yml` :
+1. Dans le dépôt de notes, ajoute deux secrets (*Settings → Secrets and variables → Actions*) :
+   - `VAPID_PRIVATE_KEY` : la valeur après `VAPID_PRIVATE_KEY=` dans le fichier `.env` ;
+   - `PUSH_SUBSCRIPTIONS` : le contenu de `abonnements.json`.
+2. Ajoute `.github/workflows/rappels.yml` :
 
-```yaml
-on:
-  schedule: [{ cron: "7,27,47 * * * *" }]
-  workflow_dispatch:
-jobs:
-  rappels:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: YannLeBezvoet/rappels@v1
-        with:
-          vapid-private-key: ${{ secrets.VAPID_PRIVATE_KEY }}
-          subscriptions: ${{ secrets.PUSH_SUBSCRIPTIONS }}
-          timezone: Europe/Paris
-```
+   ```yaml
+   name: Rappels
+   on:
+     schedule:
+       - cron: '7,27,47 * * * *'
+     workflow_dispatch:
+   concurrency:
+     group: rappels
+     cancel-in-progress: false
+   permissions:
+     contents: read
+   jobs:
+     rappels:
+       runs-on: ubuntu-latest
+       timeout-minutes: 5
+       steps:
+         - uses: actions/checkout@v7
+         - uses: YannLeBezvoet/rappels@v1
+           with:
+             vapid-private-key: ${{ secrets.VAPID_PRIVATE_KEY }}
+             subscriptions: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+             timezone: Europe/Paris
+   ```
+
+   Garde ce fichier dans un dépôt **privé** : le journal des Actions d'un dépôt public est lisible par tous.
+
+À chaque passage, l'Action lit les notes et envoie les rappels dont c'est l'heure : jusqu'à 10 minutes avant, ou en rattrapage jusqu'à 24 heures après s'ils ne sont pas encore partis. Elle retient les rappels envoyés dans son cache pour ne jamais les renvoyer. Le résumé du passage, dans l'onglet Actions, liste les rappels envoyés et les prochains.
+
+Réglages facultatifs (`with:`) :
+
+| Nom | Défaut | Rôle |
+| --- | --- | --- |
+| `notes` | `.` | dossier des notes dans le dépôt |
+| `timezone` | `Europe/Paris` | fuseau horaire des dates écrites |
+| `default-time` | `08:00` | heure des rappels écrits sans heure |
+| `advance-minutes` | `10` | avance maximale d'un envoi |
+| `catch-up-hours` | `24` | retard maximal d'un envoi |
+| `contact` | adresse de l'Action | contact donné aux services de push |
+| `dry-run` | `false` | `true` : affiche ce qui partirait, sans rien envoyer |
+
+Trois passages par heure font environ 2 200 minutes d'Actions par mois : c'est dans le quota de GitHub Pro (3 000), pas dans celui d'un compte gratuit (2 000). Avec un compte gratuit, passe à deux passages par heure (`'7,37 * * * *'`).
 
 ## État
 
 En construction.
 
 1. ~~Le moteur, en local : lecture des notes et liste des prochains rappels.~~ Fait.
-2. L'appli et les clés : abonnement depuis le téléphone, notification de test. En cours : il reste l'essai sur un vrai téléphone.
-3. L'Action, de bout en bout.
+2. ~~L'appli et les clés : abonnement depuis le téléphone, notification de test.~~ Fait.
+3. L'Action, de bout en bout. En cours : il reste le premier passage sur GitHub.
 4. Bonus : rappels récurrents, boutons « Fait » et « Reporter », tâches du jour.
 
 ## Licence
