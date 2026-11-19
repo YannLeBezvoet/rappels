@@ -1,0 +1,20 @@
+{
+  "name": "rappels",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rappels tirés de notes Markdown, envoyés sur le téléphone par une Action GitHub (Web Push).",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "rappels": "node moteur/cli.ts",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,1 @@
+- [ ] Ne doit pas apparaître : ce n'est pas un fichier .md 📅 2026-12-01
