@@ -13,5 +13,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["moteur", "tests"]
+  "include": ["moteur", "outils", "tests"]
 }

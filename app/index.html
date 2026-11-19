@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Rappels</title>
+    <meta name="description" content="Reçoit en notification les rappels écrits dans tes notes." />
+    <meta name="theme-color" content="#5b3cc4" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icones/icone-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="icones/apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="icones/icone-192.png" alt="" width="44" height="44" />
+        <h1>Rappels</h1>
+      </header>
+      <p class="intro">Les rappels écrits dans tes notes arrivent ici, en notification.</p>
+
+      <section id="etat" class="carte" aria-live="polite">
+        <p id="etat-texte">Chargement…</p>
+        <button id="activer" type="button" hidden>Activer les notifications</button>
+      </section>
+
+      <details id="abonnement" class="carte" hidden>
+        <summary>Le texte à envoyer sur ton PC</summary>
+        <p>
+          Il permet à ton dépôt de notes d’envoyer des notifications à ce téléphone, et à rien d’autre.
+          Envoie-le-toi (mail, Keep…), à refaire seulement si tu changes de téléphone.
+        </p>
+        <textarea id="abonnement-texte" readonly rows="7" spellcheck="false" aria-label="Texte d’abonnement"></textarea>
+        <div class="boutons">
+          <button id="copier" type="button">Copier</button>
+          <button id="partager" type="button" hidden>Partager…</button>
+        </div>
+        <p id="copie-ok" class="discret" role="status"></p>
+      </details>
+
+      <section id="outils" class="boutons" hidden>
+        <button id="tester" type="button" class="secondaire">Tester l’affichage</button>
+        <button id="installer" type="button" class="secondaire" hidden>Ajouter à l’écran d’accueil</button>
+        <button id="desactiver" type="button" class="secondaire">Désactiver sur ce téléphone</button>
+      </section>
+    </main>
+  </body>
+</html>

@@ -4,9 +4,10 @@ Envoie sur ton téléphone les rappels écrits dans tes notes Markdown, depuis u
 
 Tes notes restent dans ton propre dépôt privé. Ce dépôt fournit :
 
-- `moteur/` : lit les notes, repère les rappels arrivés à échéance et les envoie en Web Push ;
+- `moteur/` : lit les notes, repère les rappels arrivés à échéance et les envoie en Web Push, sans dépendance ;
 - `app/` : une petite appli web installable (PWA) qui reçoit les notifications, publiée sur GitHub Pages ;
-- `action.yml` : l'Action à appeler depuis ton dépôt de notes.
+- `outils/` : création des clés et notification de test, depuis le PC ;
+- `action.yml` (bientôt) : l'Action à appeler depuis ton dépôt de notes.
 
 ## Écrire un rappel
 
@@ -44,6 +45,32 @@ npm test            # tests
 npm run typecheck   # vérification des types
 ```
 
+## Recevoir les notifications sur le téléphone
+
+1. **Les clés**, une seule fois, sur le PC :
+
+   ```bash
+   npm run cles
+   ```
+
+   La clé privée est rangée dans `.env`, qui n'est jamais commité. La clé publique est écrite dans `app/config.json`, publiée avec l'appli.
+
+2. **Publier l'appli** : dans les réglages du dépôt, *Settings → Pages → Source : GitHub Actions*. Chaque push qui touche `app/` la republie à l'adresse https://yannlebezvoet.github.io/rappels/.
+
+3. **Sur le téléphone**, ouvre cette adresse :
+   - Android : dans Chrome ou Firefox ;
+   - iPhone : iOS 16.4 au minimum ; ajoute d'abord la page à l'écran d'accueil, puis ouvre-la depuis l'icône.
+
+   Touche « Activer les notifications », autorise-les, puis envoie-toi le texte affiché (par mail ou dans une note).
+
+4. **Sur le PC**, colle ce texte dans un fichier `abonnements.json` à la racine de ce dossier. Il est ignoré par git. Puis :
+
+   ```bash
+   npm run notif-test
+   ```
+
+   La notification « Ça marche ! » arrive sur le téléphone. Pour plusieurs appareils, mets les textes dans une liste : `[ {...}, {...} ]`.
+
 ## Utilisation (bientôt)
 
 Dans ton dépôt de notes, `.github/workflows/rappels.yml` :
@@ -69,7 +96,7 @@ jobs:
 En construction.
 
 1. ~~Le moteur, en local : lecture des notes et liste des prochains rappels.~~ Fait.
-2. L'appli et les clés : abonnement depuis le téléphone, notification de test.
+2. L'appli et les clés : abonnement depuis le téléphone, notification de test. En cours : il reste l'essai sur un vrai téléphone.
 3. L'Action, de bout en bout.
 4. Bonus : rappels récurrents, boutons « Fait » et « Reporter », tâches du jour.
 

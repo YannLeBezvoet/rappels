@@ -1,0 +1,174 @@
+:root {
+  color-scheme: light dark;
+  --fond: #f6f5fb;
+  --carte: #ffffff;
+  --texte: #1d1b26;
+  --discret: #5f5b70;
+  --bordure: #e2dff0;
+  --accent: #5b3cc4;
+  --accent-texte: #ffffff;
+  --accent-doux: #ece7fb;
+  --ok: #1d7a46;
+  --erreur: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #13121a;
+    --carte: #1e1c28;
+    --texte: #ecebf3;
+    --discret: #a9a5bb;
+    --bordure: #34313f;
+    --accent: #9d85ff;
+    --accent-texte: #15121f;
+    --accent-doux: #2a2540;
+    --ok: #6fd39a;
+    --erreur: #ff8a80;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+main {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: max(1.5rem, env(safe-area-inset-top)) 1rem 2.5rem;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+header img {
+  border-radius: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.intro {
+  color: var(--discret);
+  margin: 0.75rem 0 1.25rem;
+}
+
+.carte {
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.carte > :first-child {
+  margin-top: 0;
+}
+
+.carte > :last-child {
+  margin-bottom: 0;
+}
+
+#etat-texte {
+  margin: 0;
+}
+
+#etat[data-type='ok'] #etat-texte {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+#etat[data-type='erreur'] #etat-texte {
+  color: var(--erreur);
+}
+
+#etat button {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+details[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+details p {
+  color: var(--discret);
+  font-size: 0.95rem;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 0.6rem;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: var(--fond);
+  color: var(--texte);
+  font: 0.8rem/1.4 ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  word-break: break-all;
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+button {
+  flex: 1 1 auto;
+  min-height: 2.75rem;
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-texte);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.secondaire {
+  background: var(--accent-doux);
+  color: var(--texte);
+  font-weight: 500;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+button:focus-visible,
+summary:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.discret {
+  color: var(--discret);
+  font-size: 0.9rem;
+  min-height: 1.35em;
+  margin: 0.5rem 0 0;
+}
